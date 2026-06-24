@@ -74,7 +74,7 @@ def _get_client():
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY 환경변수가 비어 있습니다.")
-        _client = OpenAI(api_key=api_key)
+        _client = OpenAI(api_key=api_key, timeout=60.0, max_retries=5)
     return _client
 
 
