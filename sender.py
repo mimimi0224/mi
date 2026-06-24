@@ -66,25 +66,33 @@ def send_feed(
             "GMAIL_ADDRESS 또는 GMAIL_APP_PASSWORD 환경변수가 비어 있습니다."
         )
 
-    # 쉼표로 구분된 여러 수신자 지원
+    # 쉼표로 구분된 여러 수신자 — 개인별로 따로 발송
     recipients = [r.strip() for r in to_raw.split(",") if r.strip()]
     if not recipients:
         raise SendError("GMAIL_TO 환경변수가 비어 있습니다.")
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"[주린이 경제 한입] {title}"
-    msg["From"] = address
-    msg["To"] = ", ".join(recipients)
-
-    msg.attach(MIMEText(description, "plain", "utf-8"))
-    msg.attach(MIMEText(_build_html(title, description, link_url, button_title), "html", "utf-8"))
+    html = _build_html(title, description, link_url, button_title)
+    failed = []
 
     try:
         with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
             server.login(address, app_password)
-            server.sendmail(address, recipients, msg.as_string())
+            for recipient in recipients:
+                msg = MIMEMultipart("alternative")
+                msg["Subject"] = f"[주린이 경제 한입] {title}"
+                msg["From"] = address
+                msg["To"] = recipient          # 본인 주소만 표시됨
+                msg.attach(MIMEText(description, "plain", "utf-8"))
+                msg.attach(MIMEText(html, "html", "utf-8"))
+                try:
+                    server.sendmail(address, recipient, msg.as_string())
+                except smtplib.SMTPException as e:
+                    failed.append(f"{recipient}: {e}")
     except smtplib.SMTPException as e:
-        raise SendError(f"SMTP 전송 실패: {e}") from e
+        raise SendError(f"SMTP 로그인 실패: {e}") from e
+
+    if failed:
+        raise SendError(f"일부 발송 실패: {'; '.join(failed)}")
 
     return {"result": "ok", "to": recipients}
 
