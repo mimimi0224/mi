@@ -60,9 +60,7 @@ log = logging.getLogger("juriny")
 # 한 번에 다룰 뉴스 개수 (1~2개 권장)
 TOP_N = 2
 
-# 피드 설명(description)에 담을 본문 길이 가이드.
-# 너무 길면 카카오가 잘라내므로 핵심만 압축한다.
-DESC_MAX = 350
+DESC_MAX = 10000
 
 
 def build_feed_payload(rewritten: dict, source_url: str) -> dict:

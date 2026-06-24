@@ -27,10 +27,10 @@ import re
 from openai import OpenAI
 
 MODEL = "gpt-4o-mini"
-MAX_TOKENS = 1500
+MAX_TOKENS = 4000
 
 # 본문이 너무 길면 토큰 절약을 위해 앞부분만 사용 (기사 핵심은 보통 상단)
-BODY_CHAR_LIMIT = 2000
+BODY_CHAR_LIMIT = 5000
 
 SYSTEM_PROMPT = (
     "너는 주식·경제에 막 입문한 '주린이'를 위한 친근한 한국어 블로그 작가야. "
