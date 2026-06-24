@@ -1,0 +1,29 @@
+name: 주린이 경제 한입 — 일일 발송
+
+on:
+  schedule:
+    - cron: "0 0 * * 1-5"   # 평일 오전 9시 KST (= UTC 00:00)
+  workflow_dispatch:          # 수동 실행 버튼
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: 뉴스 수집 → 풀어쓰기 → 이메일 발송
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_TO: ${{ secrets.GMAIL_TO }}
+        run: python main.py

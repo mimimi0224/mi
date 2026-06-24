@@ -1,0 +1,15 @@
+# 환경변수 (API 키 노출 방지)
+.env
+
+# 수집된 뉴스 데이터 (빌드 산출물)
+data/
+
+# 토큰 캐시
+.kakao_token.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
